@@ -264,6 +264,7 @@ function useMediaRecorder() {
   const [startTime, setStartTime] = useState3(null);
   const [endTime, setEndTime] = useState3(null);
   const [segments, setSegments] = useState3([]);
+  const [mimeType, setMimeType] = useState3(null);
   const isFinalized = useMemo3(
     () => segments.length > 0 && recorderState === "inactive" && endTime !== null,
     [segments, recorderState, endTime]
@@ -281,6 +282,7 @@ function useMediaRecorder() {
       dataAvailableHandler(ev, setSegments);
     });
     setSegments([]);
+    setMimeType(recorderOptions.mimeType ?? "");
     setEndTime(null);
     const startTime2 = performance.now();
     recorder2.start(timeslice);
@@ -307,6 +309,7 @@ function useMediaRecorder() {
     segments,
     startTime,
     endTime,
+    mimeType,
     startRecording,
     stopRecording
   };

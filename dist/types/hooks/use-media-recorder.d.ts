@@ -75,6 +75,12 @@ interface RecorderStateBase {
      */
     segments: Blob[];
     /**
+     * The mimeType used for recording.
+     *
+     * Default: `""`
+     */
+    mimeType: string | null;
+    /**
      * Starts recording `media` with this recorder.
      * @param media the media to record.
      * @param options the optional options for recording.
@@ -96,6 +102,7 @@ interface RecorderErrorState extends RecorderStateBase {
     startTime: null;
     endTime: null;
     segments: [];
+    mimeType: null;
 }
 /**
  * The recording state of the recorder.
@@ -108,6 +115,7 @@ interface RecorderRecordingState extends RecorderStateBase {
     startTime: DOMHighResTimeStamp;
     endTime: null;
     segments: [];
+    mimeType: string;
 }
 /**
  * The final state of the recorder.
@@ -120,6 +128,7 @@ interface RecorderFinalizedState extends RecorderStateBase {
     startTime: DOMHighResTimeStamp;
     endTime: DOMHighResTimeStamp;
     segments: Blob[];
+    mimeType: string;
 }
 /**
  * The state of the recorder.
