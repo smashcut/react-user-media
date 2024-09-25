@@ -38,7 +38,7 @@ export interface RecorderOptions extends MediaRecorderOptions {
    */
   dataAvailableHandler?: (
     ev: BlobEvent,
-    callback: (value: React.SetStateAction<Blob[]>) => void,
+    callback: (value: React.SetStateAction<Blob[]>) => void
   ) => void;
 }
 
@@ -98,7 +98,7 @@ interface RecorderStateBase {
 
   /**
    * The mimeType used for recording.
-   * 
+   *
    * Default: `""`
    */
   mimeType: string | null;
@@ -184,7 +184,7 @@ export function useMediaRecorder(): RecorderState {
   const recorderState = useMediaRecorderState(recorder);
   const isRecording = useMemo(
     () => recorderState === "recording",
-    [recorderState],
+    [recorderState]
   );
 
   const error = useMediaRecorderError(recorder);
@@ -197,19 +197,21 @@ export function useMediaRecorder(): RecorderState {
   const [mimeType, setMimeType] = useState<string | null>(null);
   const isFinalized = useMemo(
     () =>
-      segments.length > 0 && recorderState === "inactive" && endTime !== null,
-    [segments, recorderState, endTime],
+      segments.reduce((p, c) => p + c.size, 0) > 0 &&
+      recorderState === "inactive" &&
+      endTime !== null,
+    [segments, recorderState, endTime]
   );
 
   const startRecording = useCallback(function startRecordingMedia(
     media: MediaStream,
-    options?: RecorderOptions,
+    options?: RecorderOptions
   ) {
     const { timeslice, dataAvailableHandler, ...recorderOptions } = {
       timeslice: 30 * 1000 /* 30s */,
       dataAvailableHandler: (
         ev: BlobEvent,
-        callback: (value: React.SetStateAction<Blob[]>) => void,
+        callback: (value: React.SetStateAction<Blob[]>) => void
       ) => {
         callback((current) => current.concat(ev.data));
       },
@@ -233,7 +235,8 @@ export function useMediaRecorder(): RecorderState {
 
     recorderRef.current = recorder;
     setIsRecorderDirty(true);
-  }, []);
+  },
+  []);
 
   const stopRecording = useCallback(function stopRecordingMedia() {
     const endTime = performance.now();
@@ -243,7 +246,7 @@ export function useMediaRecorder(): RecorderState {
       function onStopCompleted() {
         setEndTime(endTime);
       },
-      { once: true },
+      { once: true }
     );
 
     recorderRef.current?.stop();
@@ -288,14 +291,14 @@ function useMediaRecorderState(recorder: MediaRecorder | undefined) {
           recorder?.removeEventListener("pause", callback);
         };
       },
-      [recorder],
+      [recorder]
     ),
     useCallback(
       function getSnapshot() {
         return recorder?.state ?? "unavailable";
       },
-      [recorder],
-    ),
+      [recorder]
+    )
   );
 }
 
@@ -320,7 +323,7 @@ function useMediaRecorderError(recorder: MediaRecorder | undefined) {
         };
       }
     },
-    [recorder],
+    [recorder]
   );
 
   return error;

@@ -299,30 +299,33 @@ function useMediaRecorder() {
   const [segments, setSegments] = (0, import_react4.useState)([]);
   const [mimeType, setMimeType] = (0, import_react4.useState)(null);
   const isFinalized = (0, import_react4.useMemo)(
-    () => segments.length > 0 && recorderState === "inactive" && endTime !== null,
+    () => segments.reduce((p, c) => p + c.size, 0) > 0 && recorderState === "inactive" && endTime !== null,
     [segments, recorderState, endTime]
   );
-  const startRecording = (0, import_react4.useCallback)(function startRecordingMedia(media, options) {
-    const { timeslice, dataAvailableHandler, ...recorderOptions } = {
-      timeslice: 30 * 1e3,
-      dataAvailableHandler: (ev, callback) => {
-        callback((current) => current.concat(ev.data));
-      },
-      ...options
-    };
-    const recorder2 = new MediaRecorder(media, recorderOptions);
-    recorder2.addEventListener("dataavailable", function onDataAvailable(ev) {
-      dataAvailableHandler(ev, setSegments);
-    });
-    setSegments([]);
-    setMimeType(recorderOptions.mimeType ?? "");
-    setEndTime(null);
-    const startTime2 = performance.now();
-    recorder2.start(timeslice);
-    setStartTime(startTime2);
-    recorderRef.current = recorder2;
-    setIsRecorderDirty(true);
-  }, []);
+  const startRecording = (0, import_react4.useCallback)(
+    function startRecordingMedia(media, options) {
+      const { timeslice, dataAvailableHandler, ...recorderOptions } = {
+        timeslice: 30 * 1e3,
+        dataAvailableHandler: (ev, callback) => {
+          callback((current) => current.concat(ev.data));
+        },
+        ...options
+      };
+      const recorder2 = new MediaRecorder(media, recorderOptions);
+      recorder2.addEventListener("dataavailable", function onDataAvailable(ev) {
+        dataAvailableHandler(ev, setSegments);
+      });
+      setSegments([]);
+      setMimeType(recorderOptions.mimeType ?? "");
+      setEndTime(null);
+      const startTime2 = performance.now();
+      recorder2.start(timeslice);
+      setStartTime(startTime2);
+      recorderRef.current = recorder2;
+      setIsRecorderDirty(true);
+    },
+    []
+  );
   const stopRecording = (0, import_react4.useCallback)(function stopRecordingMedia() {
     const endTime2 = performance.now();
     recorderRef.current?.addEventListener(
